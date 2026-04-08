@@ -2654,12 +2654,16 @@
      LESSON CARD — global fixes
      ───────────────────────────────────────────── */
 
-  /* Give each lesson card a consistent gap and clip its children to its border-radius */
+  /* Give each lesson card a consistent gap */
   .lesson {
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
     overflow: visible !important;
+    padding-bottom: 12px !important;
   }
   .lesson:last-of-type { margin-bottom: 0 !important; }
+
+  /* Reduce the 20px top margin that .well adds inside the card */
+  .lesson .well { margin-top: 12px !important; margin-bottom: 0 !important; }
 
   /* Stop lesson titles wrapping at narrower viewports */
   .lesson-title {
@@ -2668,18 +2672,12 @@
     text-overflow: ellipsis !important;
   }
 
-  /* Tighten the title / CTA row and the card's internal padding */
-  .lesson .split--flag {
-    padding-bottom: 4px !important;
-  }
-  .lesson .well { padding-top: 14px !important; padding-bottom: 14px !important; }
-
   /* Activity count + time subtitle under lesson title */
   .tc-lesson-meta {
     font-size: 13px;
     font-weight: 600;
     color: #888;
-    margin: 4px 0 0 0;
+    margin: 2px 0 0 0;
     letter-spacing: 0;
     line-height: 1.4;
   }
@@ -2735,8 +2733,7 @@
      ACTIVITY TRACK — type-colored segmented bar
      ───────────────────────────────────────────── */
   .tc-bar {
-    margin-top: 10px;
-    margin-bottom: -6px;
+    margin-top: 8px;
     border-top: 1px solid #efefef;
     padding-top: 8px;
   }
