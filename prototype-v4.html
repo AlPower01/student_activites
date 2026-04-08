@@ -2656,7 +2656,7 @@
 
   /* Give each lesson card a consistent gap and clip its children to its border-radius */
   .lesson {
-    margin-bottom: 16px !important;
+    margin-bottom: 10px !important;
     overflow: visible !important;
   }
   .lesson:last-of-type { margin-bottom: 0 !important; }
@@ -2668,10 +2668,11 @@
     text-overflow: ellipsis !important;
   }
 
-  /* Give the title / CTA header row breathing room above the Activities bar */
+  /* Tighten the title / CTA row and the card's internal padding */
   .lesson .split--flag {
-    padding-bottom: 10px !important;
+    padding-bottom: 4px !important;
   }
+  .lesson .well { padding-top: 14px !important; padding-bottom: 14px !important; }
 
   /* Activity count + time subtitle under lesson title */
   .tc-lesson-meta {
@@ -2734,9 +2735,10 @@
      ACTIVITY TRACK — type-colored segmented bar
      ───────────────────────────────────────────── */
   .tc-bar {
-    margin-top: 14px;
+    margin-top: 10px;
+    margin-bottom: -6px;
     border-top: 1px solid #efefef;
-    padding-top: 10px;
+    padding-top: 8px;
   }
   .lesson.is-complete .tc-bar { border-top-color: rgba(255,255,255,.18); }
 
@@ -2833,8 +2835,10 @@
   .tc-act-row:hover      { background: #f0f6fc; text-decoration: none; }
   .tc-act-row.tc-done    { background: rgba(113,177,107,.1); }
   .tc-act-row.tc-current { background: #eaf4fd; border-color: #bcddf8; }
+  .tc-act-row.tc-act-highlighted { background: #dbeeff !important; border-color: #3295db !important; transition: background .1s, border-color .1s; }
   .lesson.is-complete .tc-act-row.tc-done  { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.12); }
   .lesson.is-complete .tc-act-row:hover    { background: rgba(255,255,255,.18); }
+  .lesson.is-complete .tc-act-row.tc-act-highlighted { background: rgba(255,255,255,.3) !important; border-color: rgba(255,255,255,.55) !important; }
 
   .tc-act-num {
     width: 22px; height: 22px; border-radius: 50%;
@@ -3243,26 +3247,29 @@
           ' data-tip-elapsed="' + act.stats.elapsed + '"' +
           ' data-tip-stars="'   + act.stats.stars   + '"';
       }
-      return '<span class="tc-seg ' + state + '"' + tip + '></span>';
+      return '<span class="tc-seg ' + state + '" data-act-idx="' + i + '"' + tip + '></span>';
     }).join('');
 
-    // Detail rows (v1-style list)
-    var doneActs    = acts.filter(function(a) { return a.done; });
-    var pendingActs = acts.filter(function(a) { return !a.done; });
-    var dividerHtml = (doneActs.length > 0 && pendingActs.length > 0)
+    // Detail rows (v1-style list) — track original acts index for hover linking
+    var doneRows    = [], pendingRows = [];
+    acts.forEach(function(a, origIdx) {
+      if (a.done) doneRows.push({ act: a, orig: origIdx });
+      else        pendingRows.push({ act: a, orig: origIdx });
+    });
+    var dividerHtml = (doneRows.length > 0 && pendingRows.length > 0)
       ? '<div class="tc-divider"><hr/><span>Up next</span><hr/></div>'
       : '';
 
-    function actRow(act, idx) {
+    function actRow(act, displayIdx, origIdx) {
       var cls        = (act.done ? 'tc-done' : '') + (act.current ? ' tc-current' : '');
-      var numContent = act.done ? checkSVG : (idx + 1);
+      var numContent = act.done ? checkSVG : (displayIdx + 1);
       var starsHTML  = (act.done && act.stats)
         ? '<span class="tc-row-stars">' + [1,2,3].map(function(n) {
             return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
           }).join('') + '</span>'
         : '';
       return (
-        '<a class="tc-act-row ' + cls + '" href="' + data.lessonUrl + '">' +
+        '<a class="tc-act-row ' + cls + '" data-act-idx="' + origIdx + '" href="' + data.lessonUrl + '">' +
           '<div class="tc-act-num">' + numContent + '</div>' +
           '<div class="tc-act-title">' + act.title + '</div>' +
           typeBadge(act.type, act.typeLabel) + starsHTML +
@@ -3273,9 +3280,9 @@
     }
 
     var rowsHtml =
-      doneActs.map(function(a, i) { return actRow(a, i); }).join('') +
+      doneRows.map(function(r, i) { return actRow(r.act, i, r.orig); }).join('') +
       dividerHtml +
-      pendingActs.map(function(a, i) { return actRow(a, doneActs.length + i); }).join('');
+      pendingRows.map(function(r, i) { return actRow(r.act, doneRows.length + i, r.orig); }).join('');
 
     return (
       '<div class="tc-bar" id="tc-bar-' + lessonId + '">' +
@@ -3322,7 +3329,8 @@
       var totalMins = data.activities.reduce(function(s, a) {
         return s + (parseInt((a.time || '').replace(/[^0-9]/g, ''), 10) || 1);
       }, 0);
-      var metaText = total + ' activit' + (total === 1 ? 'y' : 'ies') + ' · ~' + totalMins + ' min';
+      var clockSvg = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-1px;margin-right:3px;opacity:.65"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+      var metaText = total + ' activit' + (total === 1 ? 'y' : 'ies') + '&nbsp;&nbsp;' + clockSvg + '~' + totalMins + ' min';
       var existingMeta = lessonEl.querySelector('.tc-lesson-meta');
       if (!existingMeta) {
         titleEl.insertAdjacentHTML('afterend', '<p class="tc-lesson-meta">' + metaText + '</p>');
@@ -3426,10 +3434,21 @@
         if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
         globalTip.style.left = left + 'px';
         globalTip.style.top  = (r.top - th - 10) + 'px';
+
+        // Highlight matching list row if detail is open
+        var bar = seg.closest('.tc-bar');
+        if (bar && bar.classList.contains('is-open')) {
+          var row = bar.querySelector('.tc-act-row[data-act-idx="' + seg.dataset.actIdx + '"]');
+          if (row) row.classList.add('tc-act-highlighted');
+        }
       });
 
       seg.addEventListener('mouseleave', function() {
         globalTip.style.display = 'none';
+        var bar = seg.closest('.tc-bar');
+        if (bar) bar.querySelectorAll('.tc-act-highlighted').forEach(function(r) {
+          r.classList.remove('tc-act-highlighted');
+        });
       });
     });
 
