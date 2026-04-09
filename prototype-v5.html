@@ -2831,18 +2831,22 @@
   }
 
   .tc-thumb {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 8px 5px 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 10px 8px;
     border-radius: 10px;
     text-decoration: none;
     cursor: pointer;
     position: relative;
-    transition: filter .12s ease, transform .12s ease;
+    transition: background .12s ease, transform .12s ease;
     min-height: 82px;
     box-sizing: border-box;
   }
-  .tc-thumb:hover { filter: brightness(.88); transform: translateY(-1px); text-decoration: none; }
-  .tc-thumb.tc-act-highlighted { outline: 2px solid #fff; outline-offset: -2px; filter: brightness(.85); transform: translateY(-1px); }
+  .tc-thumb:hover { background: #3295db !important; transform: translateY(-1px); text-decoration: none; }
+  .tc-thumb:hover .tc-thumb-title { color: #fff; }
+  .tc-thumb:hover .tc-thumb-num   { color: rgba(255,255,255,.65); }
+  .tc-thumb:hover .tc-thumb-status { color: rgba(255,255,255,.85); }
+  .tc-thumb:hover .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.3); }
+  .tc-thumb.tc-act-highlighted { outline: 2px solid #fff; outline-offset: -2px; background: #3295db !important; transform: translateY(-1px); }
 
   .tc-thumb-done    { background: #5da356; }
   .tc-thumb-current { background: #3295db; animation: tc-seg-pulse 1.5s ease-in-out infinite; }
@@ -2869,7 +2873,6 @@
     text-align: center;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
     overflow: hidden; width: 100%;
-    margin-top: 18px;
   }
   .tc-thumb-pending .tc-thumb-title { color: #888; }
 
