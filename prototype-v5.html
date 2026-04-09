@@ -3225,7 +3225,7 @@
   }
 
   // ── Build the segmented track + expandable detail panel ───────
-  function buildBar(lessonId, data) {
+  function buildBar(lessonId, data, maxActivities) {
     var acts      = data.activities;
     var total     = acts.length;
     var completed = data.completedActivities;
@@ -3284,8 +3284,8 @@
     return (
       '<div class="tc-bar" id="tc-bar-' + lessonId + '">' +
         '<div class="tc-bar-header" onclick="tcToggleDetail(' + lessonId + ')">' +
-          '<div class="tc-seg-track">' + segsHtml + '</div>' +
-          '<span class="tc-bar-view-btn" style="margin-left:auto;white-space:nowrap">' +
+          '<div class="tc-seg-track" style="flex:none;width:' + Math.round(total / maxActivities * 100) + '%">' + segsHtml + '</div>' +
+          '<span class="tc-bar-view-btn" style="white-space:nowrap">' +
             '<span class="tc-bar-view-label"></span>' +
             '<span class="tc-bar-chevron">▾</span>' +
           '</span>' +
@@ -3305,6 +3305,10 @@
 
   // ── Inject into each lesson ────────────────────────────────────
   function inject() {
+    var maxActivities = Object.keys(LESSON_DATA).reduce(function(max, id) {
+      return Math.max(max, LESSON_DATA[id].activities.length);
+    }, 1);
+
     document.querySelectorAll('.lesson').forEach(function(lessonEl) {
       var titleEl = lessonEl.querySelector('.lesson-title');
       if (!titleEl) return;
@@ -3342,7 +3346,7 @@
 
       // Inject the segmented activity bar
       var barWrap = document.createElement('div');
-      barWrap.innerHTML = buildBar(lessonId, data);
+      barWrap.innerHTML = buildBar(lessonId, data, maxActivities);
       lessonEl.appendChild(barWrap.firstElementChild);
 
       // Fix the lesson button: replace broken sprite SVG with inline icon
