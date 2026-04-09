@@ -2822,68 +2822,80 @@
     padding-bottom: 4px;
   }
 
-  /* ─── Activity rows ──────────────────────────────────────────── */
-  .tc-act-list { display: flex; flex-direction: column; gap: 5px; }
-  .tc-act-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 8px; border-radius: 6px; border: 1px solid transparent;
-    text-decoration: none; transition: background .12s; box-sizing: border-box;
+  /* ─── Activity thumbnail grid ───────────────────────────────── */
+  .tc-thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 6px;
+    padding: 4px 0 8px;
   }
-  .tc-act-row:hover      { background: #f0f6fc; text-decoration: none; }
-  .tc-act-row.tc-done    { background: rgba(113,177,107,.1); }
-  .tc-act-row.tc-current { background: #eaf4fd; border-color: #bcddf8; }
-  .tc-act-row.tc-act-highlighted { background: #dbeeff !important; border-color: #3295db !important; transition: background .1s, border-color .1s; }
-  .lesson.is-complete .tc-act-row.tc-done  { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.12); }
-  .lesson.is-complete .tc-act-row:hover    { background: rgba(255,255,255,.18); }
-  .lesson.is-complete .tc-act-row.tc-act-highlighted { background: rgba(255,255,255,.3) !important; border-color: rgba(255,255,255,.55) !important; }
 
-  .tc-act-num {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: #eaeaea; color: #4a4a4a;
-    font-size: 11px; font-weight: 700; font-family: inherit; line-height: 1;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  .tc-thumb {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 5px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    transition: filter .12s ease, transform .12s ease;
+    min-height: 82px;
+    box-sizing: border-box;
   }
-  .tc-act-row.tc-done    .tc-act-num { background: #d0ecc8; color: #3a7a33; }
-  .tc-act-row.tc-current .tc-act-num { background: #3295db; color: #fff; }
-  .lesson.is-complete .tc-act-row.tc-done .tc-act-num { background: rgba(255,255,255,.2); color: #fff; }
+  .tc-thumb:hover { filter: brightness(.88); transform: translateY(-1px); text-decoration: none; }
+  .tc-thumb.tc-act-highlighted { outline: 2px solid #fff; outline-offset: -2px; filter: brightness(.85); transform: translateY(-1px); }
 
-  .tc-act-title {
-    flex: 1; min-width: 0; font-size: 13px; font-weight: 500; color: #4a4a4a;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  .tc-thumb-done    { background: #5da356; }
+  .tc-thumb-current { background: #3295db; animation: tc-seg-pulse 1.5s ease-in-out infinite; }
+  .tc-thumb-pending { background: #efefef; }
+
+  /* Number badge — top left */
+  .tc-thumb-num {
+    position: absolute; top: 6px; left: 7px;
+    font-size: 9px; font-weight: 700; font-family: inherit; line-height: 1;
+    color: rgba(255,255,255,.65);
   }
-  .tc-act-row.tc-done    .tc-act-title { color: #999; }
-  .tc-act-row.tc-current .tc-act-title { color: #2877af; font-weight: 600; }
-  .lesson.is-complete .tc-act-title    { color: rgba(255,255,255,.9) !important; }
+  .tc-thumb-pending .tc-thumb-num { color: rgba(0,0,0,.28); }
 
-  .tc-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #3295db; white-space: nowrap; flex-shrink: 0; }
-  .tc-badge-icon { width: 13px; height: 13px; border-radius: 3px; background: #3295db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .tc-badge-icon svg { width: 8px; height: 8px; }
-  .lesson.is-complete .tc-badge      { color: rgba(255,255,255,.85); }
-  .lesson.is-complete .tc-badge-icon { background: rgba(255,255,255,.25); }
-
-  .tc-row-stars { font-size: 11px; line-height: 1; flex-shrink: 0; letter-spacing: 1px; }
-  .tc-row-stars .tc-star-on  { color: #ffc107; }
-  .tc-row-stars .tc-star-off { color: #ccc; }
-  .lesson.is-complete .tc-row-stars .tc-star-off { color: rgba(255,255,255,.3); }
-
-  .tc-act-go {
-    width: 24px; height: 24px; border-radius: 5px; border: 1px solid #d5d5d5;
-    background: #fff; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; color: #3295db; text-decoration: none;
-    transition: background .12s, border-color .12s; cursor: pointer;
+  /* Check / arrow — top right */
+  .tc-thumb-status {
+    position: absolute; top: 5px; right: 6px;
+    font-size: 11px; line-height: 1; color: rgba(255,255,255,.8);
   }
-  .tc-act-go:hover { background: #eaf4fd; border-color: #3295db; text-decoration: none; }
-  .tc-act-row.tc-current .tc-act-go { background: #3295db; border-color: #3295db; color: #fff; }
-  .lesson.is-complete .tc-act-go { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.3); color: #fff; }
 
-  .tc-act-time { font-size: 11px; color: #aaa; white-space: nowrap; flex-shrink: 0; width: 40px; text-align: right; }
-  .lesson.is-complete .tc-act-time { color: rgba(255,255,255,.55); }
+  /* Type icon */
+  .tc-thumb-icon {
+    margin: 14px 0 7px;
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px;
+    opacity: .9;
+  }
+  .tc-thumb-icon svg { width: 20px; height: 20px; }
+  .tc-thumb-pending .tc-thumb-icon { opacity: .3; }
 
-  .tc-divider      { display: flex; align-items: center; gap: 10px; margin: 5px 0; }
-  .tc-divider hr   { flex: 1; border: none; border-top: 1px dashed #ddd; }
-  .tc-divider span { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
-  .lesson.is-complete .tc-divider hr   { border-top-color: rgba(255,255,255,.2); }
-  .lesson.is-complete .tc-divider span { color: rgba(255,255,255,.4); }
+  /* Title */
+  .tc-thumb-title {
+    font-size: 9.5px; font-weight: 600; line-height: 1.3;
+    color: rgba(255,255,255,.9);
+    text-align: center;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; width: 100%;
+  }
+  .tc-thumb-pending .tc-thumb-title { color: #999; }
+
+  /* Stars on completed tiles */
+  .tc-thumb-stars {
+    font-size: 9px; letter-spacing: 1px; margin-top: 4px; line-height: 1;
+  }
+  .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95); }
+  .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.25); }
+
+  /* Completed green card variants */
+  .lesson.is-complete .tc-thumb-done    { background: rgba(255,255,255,.22); }
+  .lesson.is-complete .tc-thumb-current { background: rgba(255,255,255,.35); }
+  .lesson.is-complete .tc-thumb-pending { background: rgba(0,0,0,.1); }
+  .lesson.is-complete .tc-thumb-pending .tc-thumb-title { color: rgba(255,255,255,.45); }
+  .lesson.is-complete .tc-thumb-pending .tc-thumb-num   { color: rgba(255,255,255,.3); }
+  .lesson.is-complete .tc-thumb-pending .tc-thumb-icon  { opacity: .3; }
 
   /* ── Portal tooltip ─────────────────────────────────────────── */
   #tc-global-tip {
@@ -3247,39 +3259,34 @@
       return '<span class="tc-seg ' + state + '" data-act-idx="' + i + '"' + tip + '></span>';
     }).join('');
 
-    // Detail rows (v1-style list) — track original acts index for hover linking
-    var doneRows    = [], pendingRows = [];
-    acts.forEach(function(a, origIdx) {
-      if (a.done) doneRows.push({ act: a, orig: origIdx });
-      else        pendingRows.push({ act: a, orig: origIdx });
-    });
-    var dividerHtml = (doneRows.length > 0 && pendingRows.length > 0)
-      ? '<div class="tc-divider"><hr/><span>Up next</span><hr/></div>'
-      : '';
+    // Thumbnail grid — rendered in natural activity order
+    function typeIconLg(type) {
+      var icon = typeIcons[type] || typeIcons.typing;
+      return icon.replace(/width="\d+"/, 'width="20"').replace(/height="\d+"/, 'height="20"');
+    }
 
-    function actRow(act, displayIdx, origIdx) {
-      var cls        = (act.done ? 'tc-done' : '') + (act.current ? ' tc-current' : '');
-      var numContent = act.done ? checkSVG : (displayIdx + 1);
-      var starsHTML  = (act.done && act.stats)
-        ? '<span class="tc-row-stars">' + [1,2,3].map(function(n) {
+    function actThumb(act, origIdx) {
+      var cls = 'tc-thumb ' + (act.done ? 'tc-thumb-done' : (act.current ? 'tc-thumb-current' : 'tc-thumb-pending'));
+      var statusHtml = act.done
+        ? '<span class="tc-thumb-status">✓</span>'
+        : (act.current ? '<span class="tc-thumb-status">▶</span>' : '');
+      var starsHtml = (act.done && act.stats)
+        ? '<div class="tc-thumb-stars">' + [1,2,3].map(function(n) {
             return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
-          }).join('') + '</span>'
+          }).join('') + '</div>'
         : '';
       return (
-        '<a class="tc-act-row ' + cls + '" data-act-idx="' + origIdx + '" href="' + data.lessonUrl + '">' +
-          '<div class="tc-act-num">' + numContent + '</div>' +
-          '<div class="tc-act-title">' + act.title + '</div>' +
-          typeBadge(act.type, act.typeLabel) + starsHTML +
-          '<span class="tc-act-time">' + act.time + '</span>' +
-          '<span class="tc-act-go">' + arrowSVG + '</span>' +
+        '<a class="' + cls + '" data-act-idx="' + origIdx + '" href="' + data.lessonUrl + '">' +
+          '<span class="tc-thumb-num">' + (origIdx + 1) + '</span>' +
+          statusHtml +
+          '<div class="tc-thumb-icon">' + typeIconLg(act.type) + '</div>' +
+          '<div class="tc-thumb-title">' + act.title + '</div>' +
+          starsHtml +
         '</a>'
       );
     }
 
-    var rowsHtml =
-      doneRows.map(function(r, i) { return actRow(r.act, i, r.orig); }).join('') +
-      dividerHtml +
-      pendingRows.map(function(r, i) { return actRow(r.act, doneRows.length + i, r.orig); }).join('');
+    var rowsHtml = acts.map(function(a, i) { return actThumb(a, i); }).join('');
 
     return (
       '<div class="tc-bar" id="tc-bar-' + lessonId + '">' +
@@ -3291,7 +3298,7 @@
           '</span>' +
         '</div>' +
         '<div class="tc-detail" id="tc-detail-' + lessonId + '">' +
-          '<div class="tc-act-list">' + rowsHtml + '</div>' +
+          '<div class="tc-thumb-grid">' + rowsHtml + '</div>' +
         '</div>' +
       '</div>'
     );
@@ -3432,11 +3439,11 @@
         globalTip.style.left = left + 'px';
         globalTip.style.top  = (r.top - th - 10) + 'px';
 
-        // Highlight matching list row if detail is open
+        // Highlight matching thumbnail if detail is open
         var bar = seg.closest('.tc-bar');
         if (bar && bar.classList.contains('is-open')) {
-          var row = bar.querySelector('.tc-act-row[data-act-idx="' + seg.dataset.actIdx + '"]');
-          if (row) row.classList.add('tc-act-highlighted');
+          var thumb = bar.querySelector('.tc-thumb[data-act-idx="' + seg.dataset.actIdx + '"]');
+          if (thumb) thumb.classList.add('tc-act-highlighted');
         }
       });
 
