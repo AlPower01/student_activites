@@ -2783,12 +2783,19 @@
   .lesson.is-complete .tc-bar-count { color: rgba(255,255,255,.65); }
 
   /* Segmented track — spans full available width as equal bars */
+  /* Wrapper takes all remaining space between label and View btn */
+  .tc-bar-track-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+  }
   .tc-seg-track {
     display: flex;
     flex-wrap: nowrap;
     gap: 3px;
-    flex: 1;
     align-items: center;
+    /* width set inline as % of wrap — never overflows */
   }
 
   /* Individual segment — thin equal-width bar */
@@ -3296,7 +3303,9 @@
       '<div class="tc-bar" id="tc-bar-' + lessonId + '">' +
         '<div class="tc-bar-header" onclick="tcToggleDetail(' + lessonId + ')">' +
           '<span class="tc-bar-label">Activities:</span>' +
-          '<div class="tc-seg-track" style="flex:none;width:' + Math.round(total / maxActivities * 100) + '%">' + segsHtml + '</div>' +
+          '<div class="tc-bar-track-wrap">' +
+            '<div class="tc-seg-track" style="width:' + Math.round(total / maxActivities * 100) + '%">' + segsHtml + '</div>' +
+          '</div>' +
           '<span class="tc-bar-view-btn" style="margin-left:auto;white-space:nowrap">' +
             '<span class="tc-bar-view-label"></span>' +
             '<span class="tc-bar-chevron">▾</span>' +
