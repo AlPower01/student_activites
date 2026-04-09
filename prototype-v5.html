@@ -2898,12 +2898,24 @@
   }
   .tc-thumb-pending .tc-thumb-title { color: #888; }
 
-  /* Stars on completed tiles */
+  /* Stats + stars on completed tiles */
+  .tc-thumb-results {
+    margin-top: 6px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    width: 100%;
+  }
+  .tc-thumb-stat-row {
+    font-size: 10px; font-weight: 700; line-height: 1;
+    color: rgba(255,255,255,.9);
+    display: flex; gap: 6px; align-items: center;
+  }
+  .tc-thumb-stat-row span { opacity: .75; }
+  .tc-thumb-stat-row b    { opacity: 1; font-weight: 800; }
   .tc-thumb-stars {
-    font-size: 9px; letter-spacing: 1px; margin-top: 4px; line-height: 1;
+    font-size: 10px; letter-spacing: 2px; line-height: 1;
   }
   .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95); }
-  .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.25); }
+  .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.2); }
 
   /* Completed green card variants */
   .lesson.is-complete .tc-thumb-done    { background: rgba(255,255,255,.22); }
@@ -3286,17 +3298,26 @@
       var statusHtml = act.done
         ? '<span class="tc-thumb-status">✓</span>'
         : (act.current ? '<span class="tc-thumb-status">▶</span>' : '');
-      var starsHtml = (act.done && act.stats)
-        ? '<div class="tc-thumb-stars">' + [1,2,3].map(function(n) {
-            return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
-          }).join('') + '</div>'
-        : '';
+      var resultsHtml = '';
+      if (act.done && act.stats) {
+        var stars = [1,2,3].map(function(n) {
+          return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
+        }).join('');
+        resultsHtml =
+          '<div class="tc-thumb-results">' +
+            '<div class="tc-thumb-stars">' + stars + '</div>' +
+            '<div class="tc-thumb-stat-row">' +
+              '<span><b>' + act.stats.speed + '</b></span>' +
+              '<span><b>' + act.stats.acc + '</b></span>' +
+            '</div>' +
+          '</div>';
+      }
       return (
         '<a class="' + cls + '" data-act-idx="' + origIdx + '" href="' + data.lessonUrl + '">' +
           '<span class="tc-thumb-num">' + (origIdx + 1) + '</span>' +
           statusHtml +
           '<div class="tc-thumb-title">' + act.title + '</div>' +
-          starsHtml +
+          resultsHtml +
         '</a>'
       );
     }
