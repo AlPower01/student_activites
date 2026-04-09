@@ -2875,11 +2875,9 @@
   .tc-thumb:hover .tc-thumb-title  { color: #fff !important; }
   .tc-thumb:hover .tc-thumb-num    { color: rgba(255,255,255,.65) !important; }
   .tc-thumb:hover .tc-thumb-status { color: rgba(255,255,255,.85) !important; }
-  .tc-thumb:hover .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.3) !important; }
   .tc-thumb:hover * { color: inherit !important; }
   .tc-thumb:hover .tc-thumb-title  { color: #fff !important; }
   .tc-thumb:hover .tc-thumb-num    { color: rgba(255,255,255,.65) !important; }
-  .tc-thumb:hover .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95) !important; }
   .tc-thumb.tc-act-highlighted { outline: 2px solid #fff; outline-offset: -2px; background: #3295db !important; transform: translateY(-1px); }
 
   .tc-thumb-done    { background: #5da356; }
@@ -2911,10 +2909,8 @@
   .tc-thumb-pending .tc-thumb-title { color: #888; }
 
   /* Stars on completed tiles */
-  .tc-thumb-results { margin-top: 5px; width: 100%; }
-  .tc-thumb-stars { font-size: 13px; letter-spacing: 3px; line-height: 1; }
-  .tc-thumb-stars .tc-star-on  { color: #ffd84a; text-shadow: 0 1px 3px rgba(0,0,0,.2); }
-  .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.2); }
+  .tc-thumb-results { margin-top: 5px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+  .tc-thumb-stars { display: flex; justify-content: center; gap: 2px; line-height: 1; }
   .tc-thumb-stat-row { display: none; }
 
   /* Completed green card variants */
@@ -2970,9 +2966,9 @@
   .tc-tip-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px; line-height: 1.35; }
   .tc-tip-stats { font-size: 12px; color: #bbb; margin-bottom: 6px; }
   .tc-tip-state { font-size: 11px; color: #666; }
-  .tc-tip-stars { font-size: 15px; line-height: 1; }
-  .tc-star-on   { color: #ffc107; }
-  .tc-star-off  { color: #444; }
+  .tc-tip-stars { display: flex; justify-content: center; gap: 2px; line-height: 1; margin-top: 4px; }
+  .tc-star-img     { display: block; width: 1em; height: 1em; }
+  .tc-star-img-off { opacity: 0.2; filter: grayscale(1); }
 </style>
 
 <script>
@@ -3309,8 +3305,10 @@
           ' data-tip-acc="'     + act.stats.acc     + '"' +
           ' data-tip-elapsed="' + act.stats.elapsed + '"' +
           ' data-tip-stars="'   + act.stats.stars   + '"';
+        var starSrc = './Typing Lessons - Learn To Type And Improve Typing Speed Free - Typing.com_files/star.svg';
         var stars = [1,2,3].map(function(n) {
-          return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
+          var off = n > act.stats.stars ? ' tc-star-img-off' : '';
+          return '<img class="tc-star-img' + off + '" src="' + starSrc + '" width="13" height="13" aria-hidden="true">';
         }).join('');
         resultsHtml =
           '<div class="tc-thumb-results">' +
@@ -3479,9 +3477,11 @@
       var elapsed = el.dataset.tipElapsed;
       var stars   = parseInt(el.dataset.tipStars || '0', 10);
 
+      var starSrc = './Typing Lessons - Learn To Type And Improve Typing Speed Free - Typing.com_files/star.svg';
       var starsHtml = (state === 'done')
         ? '<div class="tc-tip-stars">' + [1,2,3].map(function(i) {
-            return '<span class="' + (i <= stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
+            var off = i > stars ? ' tc-star-img-off' : '';
+            return '<img class="tc-star-img' + off + '" src="' + starSrc + '" width="14" height="14" aria-hidden="true">';
           }).join('') + '</div>'
         : '';
 
