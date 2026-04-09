@@ -2859,11 +2859,15 @@
     min-height: 82px;
     box-sizing: border-box;
   }
-  .tc-thumb:hover { background: #3295db !important; transform: translateY(-1px); text-decoration: none; }
+  .tc-thumb:hover { background: #3295db !important; color: #fff !important; transform: translateY(-1px); text-decoration: none; }
   .tc-thumb:hover .tc-thumb-title  { color: #fff !important; }
   .tc-thumb:hover .tc-thumb-num    { color: rgba(255,255,255,.65) !important; }
   .tc-thumb:hover .tc-thumb-status { color: rgba(255,255,255,.85) !important; }
   .tc-thumb:hover .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.3) !important; }
+  .tc-thumb:hover * { color: inherit !important; }
+  .tc-thumb:hover .tc-thumb-title  { color: #fff !important; }
+  .tc-thumb:hover .tc-thumb-num    { color: rgba(255,255,255,.65) !important; }
+  .tc-thumb:hover .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95) !important; }
   .tc-thumb.tc-act-highlighted { outline: 2px solid #fff; outline-offset: -2px; background: #3295db !important; transform: translateY(-1px); }
 
   .tc-thumb-done    { background: #5da356; }
