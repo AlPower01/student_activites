@@ -2748,6 +2748,17 @@
     cursor: pointer;
     user-select: none;
   }
+  .tc-bar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #aaa;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .lesson.is-complete .tc-bar-label { color: rgba(255,255,255,.5); }
+
   .tc-bar-view-btn {
     display: flex;
     align-items: center;
@@ -3284,8 +3295,9 @@
     return (
       '<div class="tc-bar" id="tc-bar-' + lessonId + '">' +
         '<div class="tc-bar-header" onclick="tcToggleDetail(' + lessonId + ')">' +
+          '<span class="tc-bar-label">Activities:</span>' +
           '<div class="tc-seg-track" style="flex:none;width:' + Math.round(total / maxActivities * 100) + '%">' + segsHtml + '</div>' +
-          '<span class="tc-bar-view-btn" style="white-space:nowrap">' +
+          '<span class="tc-bar-view-btn" style="margin-left:auto;white-space:nowrap">' +
             '<span class="tc-bar-view-label"></span>' +
             '<span class="tc-bar-chevron">▾</span>' +
           '</span>' +
