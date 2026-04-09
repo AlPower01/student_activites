@@ -2722,7 +2722,16 @@
   .lesson {
     box-shadow: 0 4px 0 #b8d4ea !important;
     cursor: pointer;
+    outline: none !important;
+    user-select: none;
   }
+  /* On card hover, all segments go blue */
+  .lesson:hover .tc-seg-done    { background: #3295db; }
+  .lesson:hover .tc-seg-pending { background: #88bfe8; filter: none; }
+  .lesson:hover .tc-seg-current { background: #3295db; }
+  /* Override the green-card white segments too */
+  .lesson.is-complete:hover .tc-seg-done    { background: #3295db; }
+  .lesson.is-complete:hover .tc-seg-pending { background: #88bfe8; }
   .lesson.is-next {
     box-shadow: 0 4px 0 #2070a8, 0 10px 30px rgba(0,0,0,.1) !important;
   }
@@ -2807,6 +2816,7 @@
     cursor: pointer;
     transition: filter .15s ease, opacity .15s ease;
   }
+  .tc-seg:focus, .tc-thumb:focus, .tc-bar-header:focus { outline: none; }
   .tc-seg:hover           { filter: brightness(.82); }
   .tc-seg.tc-act-highlighted { filter: brightness(.7) !important; outline: 2px solid rgba(0,0,0,.3); outline-offset: 1px; }
   .tc-seg-done            { background: #5da356; }
