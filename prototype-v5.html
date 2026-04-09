@@ -2729,9 +2729,7 @@
   .lesson:hover .tc-seg-done    { background: #3295db; }
   .lesson:hover .tc-seg-pending { background: #88bfe8; filter: none; }
   .lesson:hover .tc-seg-current { background: #3295db; }
-  /* Override the green-card white segments too */
-  .lesson.is-complete:hover .tc-seg-done    { background: #3295db; }
-  .lesson.is-complete:hover .tc-seg-pending { background: #88bfe8; }
+  /* Completed card — don't override its white segment colours on hover */
   .lesson.is-next {
     box-shadow: 0 4px 0 #2070a8, 0 10px 30px rgba(0,0,0,.1) !important;
   }
@@ -2968,7 +2966,10 @@
   .tc-tip-state { font-size: 11px; color: #666; }
   .tc-tip-stars { display: flex; justify-content: center; gap: 2px; line-height: 1; margin-top: 4px; }
   .tc-star-img     { display: block; width: 1em; height: 1em; }
-  .tc-star-img-off { opacity: 0.2; filter: grayscale(1); }
+  .tc-star-img-off { opacity: 0.25; filter: grayscale(1); }
+  /* On the green completed card, stars become white */
+  .lesson.is-complete .tc-star-img     { filter: brightness(0) invert(1); }
+  .lesson.is-complete .tc-star-img-off { filter: brightness(0) invert(1); opacity: 0.2; }
 </style>
 
 <script>
