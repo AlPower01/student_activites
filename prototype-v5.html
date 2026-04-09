@@ -2718,15 +2718,29 @@
   .lesson.is-complete .tc-stats-row       { color: rgba(255,255,255,0.92); }
   .lesson.is-complete .tc-stats-row span b { color: #fff; }
 
-  /* Depth edge at bottom of each card */
+  /* Depth edge at bottom of each card + press transition */
   .lesson {
     box-shadow: 0 4px 0 #b8d4ea !important;
+    transform: translateY(0);
+    transition: transform .1s ease, box-shadow .1s ease !important;
+    cursor: pointer;
   }
   .lesson.is-next {
     box-shadow: 0 4px 0 #2070a8, 0 10px 30px rgba(0,0,0,.1) !important;
   }
   .lesson.is-complete {
     box-shadow: 0 4px 0 #4a8a44 !important;
+  }
+  /* Hover = pressed down */
+  .lesson:hover {
+    transform: translateY(3px) !important;
+    box-shadow: 0 1px 0 #b8d4ea !important;
+  }
+  .lesson.is-next:hover {
+    box-shadow: 0 1px 0 #2070a8 !important;
+  }
+  .lesson.is-complete:hover {
+    box-shadow: 0 1px 0 #4a8a44 !important;
   }
 
   /* ─────────────────────────────────────────────
@@ -2899,17 +2913,12 @@
   }
   .tc-thumb-pending .tc-thumb-title { color: #888; }
 
-  /* Stats on completed tiles */
+  /* Stars on completed tiles */
   .tc-thumb-results { margin-top: 5px; width: 100%; }
-  .tc-thumb-stars { font-size: 10px; letter-spacing: 2px; line-height: 1; }
-  .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95); }
+  .tc-thumb-stars { font-size: 13px; letter-spacing: 3px; line-height: 1; }
+  .tc-thumb-stars .tc-star-on  { color: #ffd84a; text-shadow: 0 1px 3px rgba(0,0,0,.2); }
   .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.2); }
-  .tc-thumb-stat-row {
-    display: flex; justify-content: space-between;
-    font-size: 9px; font-weight: 600; color: rgba(255,255,255,.75);
-    margin-top: 3px; letter-spacing: .02em;
-  }
-  .tc-thumb:hover .tc-thumb-stat-row { color: rgba(255,255,255,.9) !important; }
+  .tc-thumb-stat-row { display: none; }
 
   /* Completed green card variants */
   .lesson.is-complete .tc-thumb-done    { background: rgba(255,255,255,.22); }
@@ -3328,7 +3337,7 @@
 
     return (
       '<div class="tc-bar" id="tc-bar-' + lessonId + '">' +
-        '<div class="tc-bar-header" onclick="tcToggleDetail(' + lessonId + ')">' +
+        '<div class="tc-bar-header">' +
           '<span class="tc-bar-label">Activities:</span>' +
           '<div class="tc-bar-track-wrap">' +
             '<div class="tc-seg-track" style="width:' + Math.round(total / maxActivities * 100) + '%">' + segsHtml + '</div>' +
@@ -3438,6 +3447,25 @@
       }
     });
 
+    // ── Card click = toggle accordion; button click = open lesson ─
+    document.querySelectorAll('.lesson').forEach(function(lessonEl) {
+      var titleEl = lessonEl.querySelector('.lesson-title');
+      if (!titleEl) return;
+      var lessonId = parseInt(titleEl.id, 10);
+      if (!LESSON_DATA[lessonId]) return;
+
+      // Button navigates to lesson — stop it from also toggling the card
+      var btn = lessonEl.querySelector('.lesson-btn');
+      if (btn) {
+        btn.addEventListener('click', function(e) { e.stopPropagation(); });
+      }
+
+      // Click anywhere else on the card toggles the accordion
+      lessonEl.addEventListener('click', function() {
+        tcToggleDetail(lessonId);
+      });
+    });
+
     // ── Portal tooltip — wired to every segment ───────────────────
     var globalTip = document.createElement('div');
     globalTip.id = 'tc-global-tip';
@@ -3507,6 +3535,7 @@
     });
 
     document.querySelectorAll('.tc-thumb').forEach(function(thumb) {
+      thumb.addEventListener('click', function(e) { e.stopPropagation(); });
       thumb.addEventListener('mouseenter', function() {
         showTip(thumb);
         // Highlight matching segment
