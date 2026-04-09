@@ -2899,12 +2899,17 @@
   }
   .tc-thumb-pending .tc-thumb-title { color: #888; }
 
-  /* Stars on completed tiles */
-  .tc-thumb-stars {
-    font-size: 10px; letter-spacing: 2px; line-height: 1; margin-top: 4px;
-  }
+  /* Stats on completed tiles */
+  .tc-thumb-results { margin-top: 5px; width: 100%; }
+  .tc-thumb-stars { font-size: 10px; letter-spacing: 2px; line-height: 1; }
   .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95); }
   .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.2); }
+  .tc-thumb-stat-row {
+    display: flex; justify-content: space-between;
+    font-size: 9px; font-weight: 600; color: rgba(255,255,255,.75);
+    margin-top: 3px; letter-spacing: .02em;
+  }
+  .tc-thumb:hover .tc-thumb-stat-row { color: rgba(255,255,255,.9) !important; }
 
   /* Completed green card variants */
   .lesson.is-complete .tc-thumb-done    { background: rgba(255,255,255,.22); }
@@ -3291,17 +3296,30 @@
         ' data-tip-title="' + act.title.replace(/"/g, '&quot;') + '"' +
         ' data-tip-type="'  + act.typeLabel + '"' +
         ' data-tip-state="' + state + '"';
+      var resultsHtml = '';
       if (act.done && act.stats) {
         tip +=
           ' data-tip-speed="'   + act.stats.speed   + '"' +
           ' data-tip-acc="'     + act.stats.acc     + '"' +
           ' data-tip-elapsed="' + act.stats.elapsed + '"' +
           ' data-tip-stars="'   + act.stats.stars   + '"';
+        var stars = [1,2,3].map(function(n) {
+          return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
+        }).join('');
+        resultsHtml =
+          '<div class="tc-thumb-results">' +
+            '<div class="tc-thumb-stars">' + stars + '</div>' +
+            '<div class="tc-thumb-stat-row">' +
+              '<span>' + act.stats.speed + '</span>' +
+              '<span>' + act.stats.acc + ' Acc</span>' +
+            '</div>' +
+          '</div>';
       }
       return (
         '<a class="' + cls + '" data-act-idx="' + origIdx + '"' + tip + ' href="' + data.lessonUrl + '">' +
           '<span class="tc-thumb-num">' + (origIdx + 1) + '</span>' +
           '<div class="tc-thumb-title">' + act.title + '</div>' +
+          resultsHtml +
         '</a>'
       );
     }
