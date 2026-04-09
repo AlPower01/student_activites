@@ -2807,6 +2807,7 @@
     transition: filter .15s ease, opacity .15s ease;
   }
   .tc-seg:hover           { filter: brightness(.82); }
+  .tc-seg.tc-act-highlighted { filter: brightness(.7) !important; outline: 2px solid rgba(0,0,0,.3); outline-offset: 1px; }
   .tc-seg-done            { background: #5da356; }
   .tc-seg-current         { background: #3295db; animation: tc-seg-pulse 1.5s ease-in-out infinite; }
   .tc-seg-pending         { background: #e4e4e4; }
@@ -2898,21 +2899,9 @@
   }
   .tc-thumb-pending .tc-thumb-title { color: #888; }
 
-  /* Stats + stars on completed tiles */
-  .tc-thumb-results {
-    margin-top: 6px;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    width: 100%;
-  }
-  .tc-thumb-stat-row {
-    font-size: 10px; font-weight: 700; line-height: 1;
-    color: rgba(255,255,255,.9);
-    display: flex; gap: 6px; align-items: center;
-  }
-  .tc-thumb-stat-row span { opacity: .75; }
-  .tc-thumb-stat-row b    { opacity: 1; font-weight: 800; }
+  /* Stars on completed tiles */
   .tc-thumb-stars {
-    font-size: 10px; letter-spacing: 2px; line-height: 1;
+    font-size: 10px; letter-spacing: 2px; line-height: 1; margin-top: 4px;
   }
   .tc-thumb-stars .tc-star-on  { color: rgba(255,220,60,.95); }
   .tc-thumb-stars .tc-star-off { color: rgba(255,255,255,.2); }
@@ -3295,29 +3284,24 @@
 
     function actThumb(act, origIdx) {
       var cls = 'tc-thumb ' + (act.done ? 'tc-thumb-done' : (act.current ? 'tc-thumb-current' : 'tc-thumb-pending'));
-      var statusHtml = act.done
-        ? '<span class="tc-thumb-status">✓</span>'
-        : (act.current ? '<span class="tc-thumb-status">▶</span>' : '');
-      var resultsHtml = '';
+      var state = act.done ? 'done' : (act.current ? 'current' : 'pending');
+      var tip =
+        ' data-tip-num="'   + (origIdx + 1) + '"' +
+        ' data-tip-total="' + total + '"' +
+        ' data-tip-title="' + act.title.replace(/"/g, '&quot;') + '"' +
+        ' data-tip-type="'  + act.typeLabel + '"' +
+        ' data-tip-state="' + state + '"';
       if (act.done && act.stats) {
-        var stars = [1,2,3].map(function(n) {
-          return '<span class="' + (n <= act.stats.stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
-        }).join('');
-        resultsHtml =
-          '<div class="tc-thumb-results">' +
-            '<div class="tc-thumb-stars">' + stars + '</div>' +
-            '<div class="tc-thumb-stat-row">' +
-              '<span><b>' + act.stats.speed + '</b></span>' +
-              '<span><b>' + act.stats.acc + ' Acc</b></span>' +
-            '</div>' +
-          '</div>';
+        tip +=
+          ' data-tip-speed="'   + act.stats.speed   + '"' +
+          ' data-tip-acc="'     + act.stats.acc     + '"' +
+          ' data-tip-elapsed="' + act.stats.elapsed + '"' +
+          ' data-tip-stars="'   + act.stats.stars   + '"';
       }
       return (
-        '<a class="' + cls + '" data-act-idx="' + origIdx + '" href="' + data.lessonUrl + '">' +
+        '<a class="' + cls + '" data-act-idx="' + origIdx + '"' + tip + ' href="' + data.lessonUrl + '">' +
           '<span class="tc-thumb-num">' + (origIdx + 1) + '</span>' +
-          statusHtml +
           '<div class="tc-thumb-title">' + act.title + '</div>' +
-          resultsHtml +
         '</a>'
       );
     }
@@ -3441,47 +3425,52 @@
     globalTip.id = 'tc-global-tip';
     document.body.appendChild(globalTip);
 
+    function showTip(el, anchorEl) {
+      var num     = el.dataset.tipNum;
+      var total   = el.dataset.tipTotal;
+      var title   = el.dataset.tipTitle;
+      var type    = el.dataset.tipType;
+      var state   = el.dataset.tipState;
+      var speed   = el.dataset.tipSpeed;
+      var acc     = el.dataset.tipAcc;
+      var elapsed = el.dataset.tipElapsed;
+      var stars   = parseInt(el.dataset.tipStars || '0', 10);
+
+      var starsHtml = (state === 'done')
+        ? '<div class="tc-tip-stars">' + [1,2,3].map(function(i) {
+            return '<span class="' + (i <= stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
+          }).join('') + '</div>'
+        : '';
+
+      var statsHtml = (state === 'done' && speed)
+        ? '<div class="tc-tip-stats">' + speed + ' &middot; ' + acc + ' Acc &middot; ' + elapsed + '</div>'
+        : (state === 'current'
+            ? '<div class="tc-tip-state">Up next ▶</div>'
+            : '<div class="tc-tip-state">Not started yet</div>');
+
+      globalTip.innerHTML =
+        '<div class="tc-tip-num">' + num + ' of ' + total + '</div>' +
+        '<div class="tc-tip-type-row">' + type + '</div>' +
+        '<div class="tc-tip-title">' + title + '</div>' +
+        statsHtml + starsHtml;
+
+      globalTip.style.display = 'block';
+
+      var r    = (anchorEl || el).getBoundingClientRect();
+      var tw   = globalTip.offsetWidth;
+      var th   = globalTip.offsetHeight;
+      var left = r.left + (r.width / 2) - (tw / 2);
+      if (left < 8) left = 8;
+      if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+      // Show above; if not enough room show below
+      var topAbove = r.top - th - 10;
+      globalTip.style.left = left + 'px';
+      globalTip.style.top  = (topAbove > 8 ? topAbove : r.bottom + 10) + 'px';
+    }
+
     document.querySelectorAll('.tc-seg').forEach(function(seg) {
       seg.addEventListener('mouseenter', function() {
-        var num     = seg.dataset.tipNum;
-        var total   = seg.dataset.tipTotal;
-        var title   = seg.dataset.tipTitle;
-        var type    = seg.dataset.tipType;
-        var state   = seg.dataset.tipState;
-        var speed   = seg.dataset.tipSpeed;
-        var acc     = seg.dataset.tipAcc;
-        var elapsed = seg.dataset.tipElapsed;
-        var stars   = parseInt(seg.dataset.tipStars || '0', 10);
-
-        var starsHtml = (state === 'done')
-          ? '<div class="tc-tip-stars">' + [1,2,3].map(function(i) {
-              return '<span class="' + (i <= stars ? 'tc-star-on' : 'tc-star-off') + '">★</span>';
-            }).join('') + '</div>'
-          : '';
-
-        var statsHtml = (state === 'done' && speed)
-          ? '<div class="tc-tip-stats">' + speed + ' &middot; ' + acc + ' Acc &middot; ' + elapsed + '</div>'
-          : (state === 'current'
-              ? '<div class="tc-tip-state">Up next ▶</div>'
-              : '<div class="tc-tip-state">Not started yet</div>');
-
-        globalTip.innerHTML =
-          '<div class="tc-tip-num">' + num + ' of ' + total + '</div>' +
-          '<div class="tc-tip-type-row">' + type + '</div>' +
-          '<div class="tc-tip-title">' + title + '</div>' +
-          statsHtml + starsHtml;
-
-        globalTip.style.display = 'block';
-
-        var r    = seg.getBoundingClientRect();
-        var tw   = globalTip.offsetWidth;
-        var th   = globalTip.offsetHeight;
-        var left = r.left + (r.width / 2) - (tw / 2);
-        if (left < 8) left = 8;
-        if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
-        globalTip.style.left = left + 'px';
-        globalTip.style.top  = (r.top - th - 10) + 'px';
-
+        showTip(seg);
         // Highlight matching thumbnail if detail is open
         var bar = seg.closest('.tc-bar');
         if (bar && bar.classList.contains('is-open')) {
@@ -3495,6 +3484,26 @@
         var bar = seg.closest('.tc-bar');
         if (bar) bar.querySelectorAll('.tc-act-highlighted').forEach(function(r) {
           r.classList.remove('tc-act-highlighted');
+        });
+      });
+    });
+
+    document.querySelectorAll('.tc-thumb').forEach(function(thumb) {
+      thumb.addEventListener('mouseenter', function() {
+        showTip(thumb);
+        // Highlight matching segment
+        var bar = thumb.closest('.tc-bar');
+        if (bar) {
+          var seg = bar.querySelector('.tc-seg[data-act-idx="' + thumb.dataset.actIdx + '"]');
+          if (seg) seg.classList.add('tc-act-highlighted');
+        }
+      });
+
+      thumb.addEventListener('mouseleave', function() {
+        globalTip.style.display = 'none';
+        var bar = thumb.closest('.tc-bar');
+        if (bar) bar.querySelectorAll('.tc-seg.tc-act-highlighted').forEach(function(s) {
+          s.classList.remove('tc-act-highlighted');
         });
       });
     });
